@@ -14,11 +14,7 @@
 */
 
 using System;
-<<<<<<< HEAD
-using System.IO;
-=======
 using QuantConnect.Configuration;
->>>>>>> origin/desktop-gui
 using QuantConnect.Interfaces;
 using QuantConnect.Logging;
 using QuantConnect.Notifications;
@@ -29,14 +25,8 @@ namespace QuantConnect.Messaging
     /// <summary>
     /// Console and Desktop implementation of messaging system for Lean Engine.
     /// </summary>
-    public class Messaging : IMessagingHandler
+    public class DesktopMessagingHandler : IMessagingHandler
     {
-<<<<<<< HEAD
-        // used to aid in generating regression tests via Cosole.WriteLine(...)
-        private static readonly TextWriter Console = System.Console.Out;
-
-        private AlgorithmNodePacket _job;
-=======
 
         private int _userId;
         private string _apiToken;
@@ -46,15 +36,13 @@ namespace QuantConnect.Messaging
         /// <summary>
         /// Class constructor
         /// </summary>
-        public Messaging()
+        public DesktopMessagingHandler()
         {
             HasSubscribers = true;
         }
->>>>>>> origin/desktop-gui
 
         /// <summary>
-        /// This implementation ignores the <seealso cref="HasSubscribers"/> flag and
-        /// instead will always write to the log.
+        /// The default implementation doesn't send messages, so this does nothing.
         /// </summary>
         public bool HasSubscribers
         {
@@ -75,13 +63,9 @@ namespace QuantConnect.Messaging
         /// </summary>
         public void SetAuthentication(AlgorithmNodePacket job)
         {
-<<<<<<< HEAD
-            _job = job;
-=======
             _userId = job.UserId;
             _apiToken = job.Channel;
             _algorithmId = job.AlgorithmId;
->>>>>>> origin/desktop-gui
         }
 
         /// <summary>
@@ -89,60 +73,6 @@ namespace QuantConnect.Messaging
         /// </summary>
         public void Send(Packet packet)
         {
-<<<<<<< HEAD
-            switch (packet.Type)
-            {
-                case PacketType.Debug:
-                    var debug = (DebugPacket) packet;
-                    Log.Trace("Debug: " + debug.Message);
-                    break;
-
-                case PacketType.Log:
-                    var log = (LogPacket) packet;
-                    Log.Trace("Log: " + log.Message);
-                    break;
-
-                case PacketType.RuntimeError:
-                    var runtime = (RuntimeErrorPacket) packet;
-                    var rstack = (!string.IsNullOrEmpty(runtime.StackTrace) ? (Environment.NewLine + " " + runtime.StackTrace) : string.Empty);
-                    Log.Error(runtime.Message + rstack);
-                    break;
-
-                case PacketType.HandledError:
-                    var handled = (HandledErrorPacket) packet;
-                    var hstack = (!string.IsNullOrEmpty(handled.StackTrace) ? (Environment.NewLine + " " + handled.StackTrace) : string.Empty);
-                    Log.Error(handled.Message + hstack);
-                    break;
-
-                case PacketType.BacktestResult:
-                    var result = (BacktestResultPacket) packet;
-
-                    if (result.Progress == 1)
-                    {
-                        // uncomment these code traces to help write regression tests
-                        //Console.WriteLine("new Dictionary<string, string>");
-                        //Console.WriteLine("\t\t\t{");
-                        foreach (var pair in result.Results.Statistics)
-                        {
-                            Log.Trace("STATISTICS:: " + pair.Key + " " + pair.Value);
-                            //Console.WriteLine("\t\t\t\t{{\"{0}\",\"{1}\"}},", pair.Key, pair.Value);
-                        }
-                        //Console.WriteLine("\t\t\t});");
-
-                        //foreach (var pair in statisticsResults.RollingPerformances)
-                        //{
-                        //    Log.Trace("ROLLINGSTATS:: " + pair.Key + " SharpeRatio: " + Math.Round(pair.Value.PortfolioStatistics.SharpeRatio, 3));
-                        //}
-                    }
-                    break;
-            }
-
-
-            if (StreamingApi.IsEnabled)
-            {
-                StreamingApi.Transmit(_job.UserId, _job.Channel, packet);
-            }
-=======
             //Preprocess debug messages:
             var debug = packet as DebugPacket;
             if (debug != null) Log.Trace("Messaging.Send(): Debug: " + debug.Message);
@@ -240,30 +170,15 @@ namespace QuantConnect.Messaging
         private void Sms(NotificationSms sms)
         {
             Log.Trace("Messaging.Sms(): Sms Not Implemented: Message: " + sms.Message);
->>>>>>> origin/desktop-gui
         }
 
         /// <summary>
-        /// Send any notification with a base type of Notification.
+        /// Send a web REST request notification triggered during live trading from a user algorithm.
         /// </summary>
-<<<<<<< HEAD
-        public void SendNotification(Notification notification)
-        {
-            var type = notification.GetType();
-            if (type == typeof (NotificationEmail)
-             || type == typeof (NotificationWeb)
-             || type == typeof (NotificationSms))
-            {
-                Log.Error("Messaging.SendNotification(): Send not implemented for notification of type: " + type.Name);
-                return;
-            }
-            notification.Send();
-=======
         /// <param name="web"></param>
         private void Web(NotificationWeb web)
         {
             Log.Trace("Messaging.Web(): Web Not Implemented: Url: " + web.Address);
->>>>>>> origin/desktop-gui
         }
     }
 }

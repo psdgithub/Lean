@@ -13,26 +13,32 @@
  * limitations under the License.
  *
 */
+using Newtonsoft.Json;
 
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace QuantConnect.Views.WinForms
+namespace QuantConnect.Views.GitHub
 {
     /// <summary>
-    /// Public extensions methods for the forms.
-    /// Credit: http://stackoverflow.com/questions/1926264/color-different-parts-of-a-richtextbox-string/1926822#1926822
+    /// Detailed information on the commit.
     /// </summary>
-    public static class RichTextBoxExtensions
+    public class CommitDetail
     {
-        public static void AppendText(this RichTextBox box, string text, Color color)
+        public class CommitPerson
         {
-            box.SelectionStart = box.TextLength;
-            box.SelectionLength = 0;
-
-            box.SelectionColor = color;
-            box.AppendText(text);
-            box.SelectionColor = box.ForeColor;
+            public string Name;
+            public string Email;
+            public string Date;
         }
+
+        [JsonProperty(PropertyName = "author")]
+        public CommitPerson Author;
+
+        [JsonProperty(PropertyName = "committer")]
+        public CommitPerson Committer;
+
+        [JsonProperty(PropertyName = "message")]
+        public string Message;
+
+        [JsonProperty(PropertyName = "comment_count")]
+        public int Comments;
     }
 }

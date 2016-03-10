@@ -14,6 +14,14 @@
     // Algorithm language selector - options CSharp, FSharp, VisualBasic, Python, Java
     "algorithm-language": "CSharp",
 
+	// enter your QC user id and api token for local charting:
+	// these can be found in your profile in the quantconnect.com/terminal
+	"enable-charting":"true",
+	"job-user-id":"677",
+	"job-api-token":"2575bcef180c1e10faf8633cd533db2e",
+	"job-project-id":"10",
+	"job-backtest-id":"10",
+
     //Physical DLL location
     "algorithm-location": "QuantConnect.Algorithm.CSharp.dll",
     //"algorithm-location": "QuantConnect.Algorithm.Python.dll",
@@ -97,7 +105,7 @@
             "live-mode": false,
 
             "setup-handler": "QuantConnect.Lean.Engine.Setup.ConsoleSetupHandler",
-            "result-handler": "QuantConnect.Lean.Engine.Results.DesktopResultHandler",
+            "result-handler": "QuantConnect.Lean.Engine.Results.BacktestingResultHandler",
             "data-feed-handler": "QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed",
             "real-time-handler": "QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler",
             "transaction-handler": "QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler"

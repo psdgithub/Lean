@@ -317,6 +317,30 @@ namespace QuantConnect.AlgorithmFactory
         }
 
         /// <summary>
+<<<<<<< HEAD
+=======
+        /// Shim method - Gets the types derived from the 'baseClassName' type
+        /// </summary>
+        [Obsolete("Use the other overload, it's this types job to produce IAlgorithm instances")]
+        public static List<string> GetExtendedTypeNames(Assembly assembly, string baseClassName)
+        {
+            return GetExtendedTypeNames(assembly);
+        }
+
+        /// <summary>
+        /// Get the extended type names from the assembly path provided.
+        /// </summary>
+        /// <param name="assemblyPath"></param>
+        /// <returns></returns>
+        public static List<string> GetExtendedTypeNames(string assemblyPath)
+        {
+            var assembly = Assembly.LoadFrom(assemblyPath);
+            return GetExtendedTypeNames(assembly);
+        }
+
+
+        /// <summary>
+>>>>>>> origin/desktop-gui
         /// Get a list of all the matching type names in this DLL assembly:
         /// </summary>
         /// <param name="assembly">Assembly dll we're loading.</param>

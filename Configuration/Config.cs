@@ -275,13 +275,18 @@ namespace QuantConnect.Configuration
         /// <summary>
         /// Write the contents of the serialized configuration back to the disk.
         /// </summary>
+<<<<<<< HEAD
         public static void Write()
+=======
+        public static void WriteAll()
+>>>>>>> origin/desktop-gui
         {
             if (!Settings.IsValueCreated) return;
             var serialized = JsonConvert.SerializeObject(Settings.Value, Formatting.Indented);
             File.WriteAllText("config.json", serialized);
         }
 
+<<<<<<< HEAD
         /// <summary>
         /// Flattens the jobject with respect to the selected environment and then
         /// removes the 'environments' node
@@ -345,6 +350,8 @@ namespace QuantConnect.Configuration
 
             return clone;
         }
+=======
+>>>>>>> origin/desktop-gui
 
         private static JToken GetToken(JToken settings, string key)
         {

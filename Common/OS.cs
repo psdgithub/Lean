@@ -90,6 +90,17 @@ namespace QuantConnect
         }
 
         /// <summary>
+        /// User friendly display of CPU
+        /// </summary>
+        public static string CpuUsagePercentage
+        {
+            get
+            {
+                return CpuUsage.NextValue().ToString("0.0") + "%";
+            }
+        }
+
+        /// <summary>
         /// Global Flag :: Operating System
         /// </summary>
         public static bool IsLinux 
@@ -218,7 +229,7 @@ namespace QuantConnect
         {
             return new Dictionary<string, string>
             {
-                {"CPU Usage",            CpuUsage.NextValue().ToString("0.0") + "%"},
+                {"CPU Usage",            CpuUsagePercentage},
                 {"Used RAM (MB)",        TotalPhysicalMemoryUsed.ToString()},
                 {"Total RAM (MB)",        TotalPhysicalMemory.ToString()},
                 {"Used Disk Space (MB)", DriveSpaceUsed.ToString() },

@@ -249,8 +249,13 @@ namespace QuantConnect.Lean.Engine.HistoricalData
             public void SampleRange(List<Chart> samples) { }
             public void SetAlgorithm(IAlgorithm algorithm) { }
             public void StoreResult(Packet packet, bool async = false) { }
+<<<<<<< HEAD
             public void SendFinalResult(AlgorithmNodePacket job, Dictionary<int, Order> orders, Dictionary<DateTime, decimal> profitLoss, Dictionary<string, Holding> holdings, StatisticsResults statisticsResults, Dictionary<string, string> banner) { }
             public void SendStatusUpdate(AlgorithmStatus status, string message = "") { }
+=======
+            public Packet SendFinalResult(AlgorithmNodePacket job, Dictionary<int, Order> orders, Dictionary<DateTime, decimal> profitLoss, Dictionary<string, Holding> holdings, StatisticsResults statisticsResults, Dictionary<string, string> banner) { return new BacktestResultPacket(); }
+            public void SendStatusUpdate(string algorithmId, AlgorithmStatus status, string message = "") { }
+>>>>>>> origin/desktop-gui
             public void SetChartSubscription(string symbol) { }
             public void RuntimeStatistic(string key, string value) { }
             public void OrderEvent(OrderEvent newEvent) { }

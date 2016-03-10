@@ -33,6 +33,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+<<<<<<< HEAD
+=======
+      <SpecificVersion>False</SpecificVersion>
+>>>>>>> origin/desktop-gui
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -47,7 +51,9 @@
     <Compile Include="..\Common\Properties\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DesktopMessagingHandler.cs" />
     <Compile Include="Messaging.cs" />
+    <Compile Include="MessagingHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamingApi.cs" />
   </ItemGroup>
@@ -57,7 +63,11 @@
       <Name>QuantConnect</Name>
     </ProjectReference>
     <ProjectReference Include="..\Configuration\QuantConnect.Configuration.csproj">
+<<<<<<< HEAD
       <Project>{0AEB4EA3-28C8-476E-89FD-926F06590B4C}</Project>
+=======
+      <Project>{0aeb4ea3-28c8-476e-89fd-926f06590b4c}</Project>
+>>>>>>> origin/desktop-gui
       <Name>QuantConnect.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\Logging\QuantConnect.Logging.csproj">

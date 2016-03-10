@@ -41,7 +41,11 @@ namespace QuantConnect.Interfaces
         /// <summary>
         /// Set the user communication channel
         /// </summary>
+<<<<<<< HEAD
         /// <param name="job"></param>
+=======
+        /// <param name="job">Job containing relevant data for messaging.</param>
+>>>>>>> origin/desktop-gui
         void SetAuthentication(AlgorithmNodePacket job);
 
         /// <summary>
@@ -51,9 +55,15 @@ namespace QuantConnect.Interfaces
         void Send(Packet packet);
 
         /// <summary>
+<<<<<<< HEAD
         /// Send any notification with a base type of Notification.
         /// </summary>
         /// <param name="notification">The notification to be sent.</param>
+=======
+        /// Common notification transmitter
+        /// </summary>
+        /// <param name="notification">Notification packet</param>
+>>>>>>> origin/desktop-gui
         void SendNotification(Notification notification);
     }
 }

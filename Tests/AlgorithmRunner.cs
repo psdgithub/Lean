@@ -69,8 +69,13 @@ namespace QuantConnect.Tests
                         engine.Run(job, algorithmPath);
                     }).Wait();
 
+<<<<<<< HEAD
                     var backtestingResultHandler = (BacktestingResultHandler)algorithmHandlers.Results;
                     statistics = backtestingResultHandler.FinalStatistics;
+=======
+                    var consoleResultHandler = (BacktestingResultHandler)algorithmHandlers.Results;
+                    statistics = consoleResultHandler.FinalStatistics;
+>>>>>>> origin/desktop-gui
                 }
             }
             catch (Exception ex)

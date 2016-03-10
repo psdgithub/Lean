@@ -57,6 +57,112 @@ namespace QuantConnect.Lean.Engine
             get { return _algorithmHandlers;}
         }
 
+<<<<<<< HEAD
+=======
+        private readonly bool _liveMode;
+        private const string _collapseMessage = "Unhandled exception breaking past controls and causing collapse of algorithm node. This is likely a memory leak of an external dependency or the underlying OS terminating the LEAN engine.";
+
+        /// <summary>
+        /// Primary Analysis Thread:
+        /// </summary>
+        public static void Main(string[] args)
+        {
+            Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
+
+            //Initialize:
+            string mode = "RELEASE";
+            var liveMode = Config.GetBool("live-mode");
+            Log.DebuggingEnabled = Config.GetBool("debug-mode");
+
+            #if DEBUG 
+                mode = "DEBUG";
+            #endif
+
+            //Name thread for the profiler:
+            Thread.CurrentThread.Name = "Algorithm Analysis Thread";
+            Log.Trace("Engine.Main(): LEAN ALGORITHMIC TRADING ENGINE v" + Constants.Version + " Mode: " + mode);
+            Log.Trace("Engine.Main(): Started " + DateTime.Now.ToShortTimeString());
+            Log.Trace("Engine.Main(): Memory " + OS.ApplicationMemoryUsed + "Mb-App  " + +OS.TotalPhysicalMemoryUsed + "Mb-Used  " + OS.TotalPhysicalMemory + "Mb-Total");
+
+            //Import external libraries specific to physical server location (cloud/local)
+            LeanEngineSystemHandlers leanEngineSystemHandlers;
+            try
+            {
+                leanEngineSystemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
+            }
+            catch (CompositionException compositionException)
+            {
+                Log.Error("Engine.Main(): Failed to load library: " + compositionException);
+                throw;
+            }
+
+            //Setup packeting, queue and controls system: These don't do much locally.
+            leanEngineSystemHandlers.Initialize();
+
+            //-> Pull job from QuantConnect job queue, or, pull local build:
+            string assemblyPath;
+            var job = leanEngineSystemHandlers.JobQueue.NextJob(out assemblyPath);
+
+            if (job == null)
+            {
+                throw new Exception("Engine.Main(): Job was null.");
+            }
+
+            LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
+            try
+            {
+                leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
+            }
+            catch (CompositionException compositionException)
+            {
+                Log.Error("Engine.Main(): Failed to load library: " + compositionException);
+                throw;
+            }
+
+            // log the job endpoints
+            Log.Trace("JOB HANDLERS: ");
+            Log.Trace("         DataFeed:     " + leanEngineAlgorithmHandlers.DataFeed.GetType().FullName);
+            Log.Trace("         Setup:        " + leanEngineAlgorithmHandlers.Setup.GetType().FullName);
+            Log.Trace("         RealTime:     " + leanEngineAlgorithmHandlers.RealTime.GetType().FullName);
+            Log.Trace("         Results:      " + leanEngineAlgorithmHandlers.Results.GetType().FullName);
+            Log.Trace("         Transactions: " + leanEngineAlgorithmHandlers.Transactions.GetType().FullName);
+            Log.Trace("         History:      " + leanEngineAlgorithmHandlers.HistoryProvider.GetType().FullName);
+            Log.Trace("         Commands:     " + leanEngineAlgorithmHandlers.CommandQueue.GetType().FullName);
+
+            // if the job version doesn't match this instance version then we can't process it
+            // we also don't want to reprocess redelivered jobs
+            if (job.Version != Constants.Version || job.Redelivered)
+            {
+                Log.Error("Engine.Run(): Job Version: " + job.Version + "  Deployed Version: " + Constants.Version + " Redelivered: " + job.Redelivered);
+                //Tiny chance there was an uncontrolled collapse of a server, resulting in an old user task circulating.
+                //In this event kill the old algorithm and leave a message so the user can later review.
+                leanEngineSystemHandlers.Api.SetAlgorithmStatus(job.AlgorithmId, AlgorithmStatus.RuntimeError, _collapseMessage);
+                leanEngineSystemHandlers.Notify.SetAuthentication(job);
+                leanEngineSystemHandlers.Notify.Send(new RuntimeErrorPacket { Message = _collapseMessage, AlgorithmId = job.AlgorithmId, Channel = job.Channel, Type = PacketType.RuntimeError });
+                leanEngineSystemHandlers.JobQueue.AcknowledgeJob(job, null); 
+                return;
+            }
+
+            Packet result = null;
+            try
+            {
+                var engine = new Engine(leanEngineSystemHandlers, leanEngineAlgorithmHandlers, liveMode);
+                result = engine.Run(job, assemblyPath);
+            }
+            finally
+            {
+                //Delete the message from the job queue:
+                leanEngineSystemHandlers.JobQueue.AcknowledgeJob(job, result);
+                Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
+
+                // clean up resources
+                leanEngineSystemHandlers.Dispose();
+                leanEngineAlgorithmHandlers.Dispose();
+                Log.LogHandler.Dispose();
+            }
+        }
+
+>>>>>>> origin/desktop-gui
         /// <summary>
         /// Initializes a new instance of the <see cref="Engine"/> class using the specified handlers
         /// </summary>
@@ -75,10 +181,11 @@ namespace QuantConnect.Lean.Engine
         /// </summary>
         /// <param name="job">The algorithm job to be processed</param>
         /// <param name="assemblyPath">The path to the algorithm's assembly</param>
-        public void Run(AlgorithmNodePacket job, string assemblyPath)
+        public Packet Run(AlgorithmNodePacket job, string assemblyPath)
         {
             var algorithm = default(IAlgorithm);
             var algorithmManager = new AlgorithmManager(_liveMode);
+            Packet resultPacket = null;
 
             //Start monitoring the backtest active status:
             var statusPing = new StateCheck.Ping(algorithmManager, _systemHandlers.Api, _algorithmHandlers.Results, _systemHandlers.Notify, job);
@@ -308,7 +415,7 @@ namespace QuantConnect.Lean.Engine
                                 job.AlgorithmId, totalSeconds.ToString("F2"), ((dataPoints/(double) 1000)/totalSeconds).ToString("F0"),
                                 dataPoints.ToString("N0")));
 
-                        _algorithmHandlers.Results.SendFinalResult(job, orders, algorithm.Transactions.TransactionRecord, holdings, statisticsResults, banner);
+                        resultPacket = _algorithmHandlers.Results.SendFinalResult(job, orders, algorithm.Transactions.TransactionRecord, holdings, statisticsResults, banner);
                     }
                     catch (Exception err)
                     {
@@ -370,6 +477,8 @@ namespace QuantConnect.Lean.Engine
                 _algorithmHandlers.Transactions.Exit();
                 _algorithmHandlers.RealTime.Exit();
             }
+
+            return resultPacket;
         }
     } // End Algorithm Node Core Thread
 } // End Namespace
